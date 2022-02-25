@@ -1,10 +1,17 @@
 require("dotenv").config();
+const serverSays = require("debug")("social:root:");
+const chalk = require("chalk");
 const express = require("express");
+const raiseServer = require("./raiseServer");
 
 const app = express();
 
-app.use((req, res) => {
-  res.json({ taworkin: true });
-});
-
-app.listen(process.env.PORT || 3000);
+(async () => {
+  try {
+    await raiseServer(app, 3000);
+  } catch (error) {
+    serverSays(
+      chalk.red(error.code === "EADDRINUSE" ? "port busy" : error.message)
+    );
+  }
+})();
