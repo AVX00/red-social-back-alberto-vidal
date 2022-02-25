@@ -2,5 +2,18 @@
   "name": "red-social-back",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "4",
+    "debug": "^4.3.3",
+    "dotenv": "^16.0.0",
+    "eslint": "^8.2.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.4.0",
+    "eslint-plugin-import": "^2.25.2",
+    "express": "^4.17.3"
+  },
+  "scripts": {
+    "start": "node src"
+  }
 }
