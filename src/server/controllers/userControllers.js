@@ -19,8 +19,13 @@ const loginUser = async (req, res, next) => {
   const { username, password } = req.body;
 
   try {
-    const { passwerd: savedPassword, id } = User.findOne({ username });
-    const isValidPassword = await bcrypt.compare(password, savedPassword);
+    const { id, password: savedPassword } = (await User.findOne({
+      username,
+    })) || { id: null, password: null };
+    const isValidPassword = await bcrypt.compare(
+      password || "",
+      savedPassword || ""
+    );
     if (isValidPassword) {
       const token = jsonwebtoken.sign({ username, id }, process.env.SECRET);
       res.json({ token });

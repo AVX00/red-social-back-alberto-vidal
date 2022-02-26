@@ -3,7 +3,7 @@ const { MongoMemoryServer } = require("mongodb-memory-server");
 const { default: mongoose } = require("mongoose");
 const connectdb = require("../../database/connectdb");
 const User = require("../../database/models/User");
-const { registerUser } = require("./userControllers");
+const { registerUser, loginUser } = require("./userControllers");
 
 let database;
 beforeAll(async () => {
@@ -21,7 +21,7 @@ beforeEach(async () => {
   registeredName = "paco";
   registeredUsername = "packs";
 
-  User.create({
+  await User.create({
     name: registeredName,
     username: registeredUsername,
     password: registeredPassword,
@@ -65,7 +65,7 @@ describe("Given a register user controller", () => {
         body: {
           name: registeredName,
           username: registeredUsername,
-          password: registeredPassword,
+          password: "1234",
         },
       };
       const res = { status: mockStatus, json: mockJson };
@@ -74,6 +74,63 @@ describe("Given a register user controller", () => {
 
       expect(mockStatus).not.toHaveBeenCalled();
       expect(mockJson).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalled();
+    });
+  });
+});
+
+describe("Given a login user controller", () => {
+  describe("When it receives a req with a logged user and a res", () => {
+    test("Then it should wall method json of res with a token", async () => {
+      const username = registeredUsername;
+      const password = "1234";
+      const mockJson = jest.fn();
+      const req = { body: { username, password } };
+      const res = { json: mockJson };
+      const next = null;
+
+      await loginUser(req, res, next);
+
+      expect(mockJson).toHaveBeenCalled();
+      expect(mockJson.mock.calls[0][0]).toHaveProperty("token");
+    });
+  });
+
+  describe("When it receves a req with an invalid username", () => {
+    test("Then it should call methods status and json of res with 409 and { error: 'invalid username or password' }", async () => {
+      const username = "paco";
+      const password = "1234";
+      const mockJson = jest.fn();
+      const mockStatus = jest.fn().mockReturnThis();
+      const req = { body: { username, password } };
+      const res = { json: mockJson, status: mockStatus };
+      const next = null;
+      const expectedJson = { error: "invalid username or password" };
+      const expectedStatus = 409;
+
+      await loginUser(req, res, next);
+
+      expect(mockJson).toHaveBeenCalledWith(expectedJson);
+      expect(mockStatus).toHaveBeenCalledWith(expectedStatus);
+    });
+  });
+
+  describe("When it receives a username and password in req but the connection with database fails", () => {
+    const mockUser = () => ({
+      findOne: jest.fn().mockImplementation(() => {
+        throw new Error("error");
+      }),
+    });
+    jest.mock("../../database/models/User", () => mockUser);
+    test("Then it should call function next", async () => {
+      const username = "paco";
+      const password = "1234";
+      const req = { body: { username, password } };
+      const res = null;
+      const next = jest.fn();
+
+      await loginUser(req, res, next);
+
       expect(next).toHaveBeenCalled();
     });
   });
