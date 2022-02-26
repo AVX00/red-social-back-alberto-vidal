@@ -7,7 +7,7 @@ const app = express();
 
 app.use(helmet());
 app.use(express.json());
-app.use("/user", userRouter);
+app.use("/api/user", userRouter);
 
 app.use(notFound);
 app.use(generalError);

@@ -1,8 +1,8 @@
 const bcrypt = require("bcrypt");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 const { default: mongoose } = require("mongoose");
-const connectdb = require("../../database/connectdb");
-const User = require("../../database/models/User");
+const connectdb = require("../../../database/connectdb");
+const User = require("../../../database/models/User");
 const { registerUser, loginUser } = require("./userControllers");
 
 let database;
@@ -121,7 +121,7 @@ describe("Given a login user controller", () => {
         throw new Error("error");
       }),
     });
-    jest.mock("../../database/models/User", () => mockUser);
+    jest.mock("../../../database/models/User", () => mockUser);
     test("Then it should call function next", async () => {
       const username = "paco";
       const password = "1234";
