@@ -1,4 +1,6 @@
+require("dotenv").config();
 const bcrypt = require("bcrypt");
+const jsonwebtoken = require("jsonwebtoken");
 const User = require("../../database/models/User");
 
 const registerUser = async (req, res, next) => {
@@ -13,4 +15,21 @@ const registerUser = async (req, res, next) => {
   }
 };
 
-module.exports = { registerUser };
+const loginUser = async (req, res, next) => {
+  const { username, password } = req.body;
+
+  try {
+    const { passwerd: savedPassword, id } = User.findOne({ username });
+    const isValidPassword = await bcrypt.compare(password, savedPassword);
+    if (isValidPassword) {
+      const token = jsonwebtoken.sign({ username, id }, process.env.SECRET);
+      res.json({ token });
+      return;
+    }
+    res.status(409).json({ error: "invalid username or password" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { registerUser, loginUser };
