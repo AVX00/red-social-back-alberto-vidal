@@ -1,9 +1,8 @@
 const express = require("express");
+const userRouter = require("./routers/userRouter");
 
 const app = express();
 
-app.use((req, res) => {
-  res.json({ taworkin: true });
-});
+app.use("/user", userRouter);
 
 module.exports = app;
