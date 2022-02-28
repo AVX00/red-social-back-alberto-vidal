@@ -14,6 +14,14 @@ const UserSchema = new Schema({
     type: String,
     required: true,
   },
+  friends: {
+    type: [Schema.Types.ObjectId],
+    ref: "user",
+  },
+  enemies: {
+    type: [Schema.Types.ObjectId],
+    ref: "user",
+  },
 });
 
 module.exports = UserSchema;
