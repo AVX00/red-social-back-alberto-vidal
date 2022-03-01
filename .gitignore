@@ -3,3 +3,4 @@ node_modules
 coverage
 sonar.key
 .scannerwork
+.vscode
